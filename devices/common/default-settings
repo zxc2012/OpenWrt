@@ -21,14 +21,7 @@ echo "0 4 * * * sh /etc/rc.d/S99opkg >/tmp/opkgupdate.log 2>&1" >> /etc/crontabs
 uci set system.@rngd[0].enabled="1"
 uci commit system
 
-uci set uhttpd.main.rfc1918_filter=0
-uci set uhttpd.main.redirect_https=0
-uci set uhttpd.main.max_connections='200'
-uci set uhttpd.main.max_requests='100'
-uci commit uhttpd
 
-echo $(uci get uhttpd.main.index_page) | grep -q "cgi-bin/luci" ||
-	uci -q add_list uhttpd.main.index_page='cgi-bin/luci' && commit uhttpd
 
 if [ ! -f /etc/config/placeholder ]; then
 
@@ -53,7 +46,7 @@ if [ ! -f /etc/config/placeholder ]; then
   uci set fstab.@global[0].anon_mount=1
   uci commit fstab
   sed -i 's/root:.*/root:$1$tTPCBw1t$ldzfp37h5lSpO9VXk4uUE\/:18336:0:99999:7:::/g' /etc/shadow
-  uci set network.lan.ipaddr="10.0.0.1"
+  uci set network.lan.ipaddr="192.168.2.1"
   uci commit network
 
   uci set network.@globals[0].packet_steering=1
@@ -63,9 +56,6 @@ if [ ! -f /etc/config/placeholder ]; then
   uci set dhcp.dnsmasq[0].allservers='1'
   uci set dhcp.lan.force='1'
   uci set dhcp.@dnsmasq[0].cachesize='1500'
-  uci set dhcp.lan.ra='hybrid'
-  uci set dhcp.lan.ndp='hybrid'
-  uci set dhcp.lan.dhcpv6='hybrid'
   uci commit dhcp
 
 fi
@@ -80,4 +70,3 @@ chmod +x /www/luci
 sed -i "s/git-.*-\(.*\)/git-\1/g" /usr/lib/lua/luci/version.lua
 
 ln -s /sbin/poweroff /sbin/shutdown
-
